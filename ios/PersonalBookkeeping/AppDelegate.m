@@ -10,28 +10,34 @@
 #import "AppDelegate.h"
 
 #import <React/RCTBundleURLProvider.h>
-#import <React/RCTRootView.h>
+@import NativeNavigation;
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  NSURL *jsCodeLocation;
+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self
+                                         launchOptions:launchOptions];
 
-  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
+  ReactNavigationCoordinator *coordinator = [ReactNavigationCoordinator sharedInstance];
 
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-                                                      moduleName:@"PersonalBookkeeping"
-                                               initialProperties:nil
-                                                   launchOptions:launchOptions];
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+  [coordinator setBridge:bridge];
+  [coordinator setDelegate:self];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
-  self.window.rootViewController = rootViewController;
+  
+  ReactTabBarController *mainViewController = [[ReactTabBarController alloc] initWithModuleName:@"Main"];
+  self.window.rootViewController = [[coordinator navigation] makeNavigationControllerWithRootViewController:mainViewController];
   [self.window makeKeyAndVisible];
   return YES;
+}
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
+}
+
+- (UIViewController *)rootViewControllerForCoordinator: (ReactNavigationCoordinator *)coordinator {
+  return self.window.rootViewController;
 }
 
 @end
