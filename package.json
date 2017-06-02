@@ -7,9 +7,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "art": "^0.10.1",
     "native-navigation": "^0.2.1",
     "react": "16.0.0-alpha.6",
     "react-native": "^0.44.2",
+    "react-native-linear-gradient": "^2.0.0",
     "styled-components": "^2.0.0"
   },
   "devDependencies": {

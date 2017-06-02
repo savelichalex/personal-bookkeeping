@@ -17,9 +17,12 @@ target 'PersonalBookkeeping' do
       'RCTAnimation',
       'RCTImage',
       'RCTNetwork',
-      'DevSupport'
+      'DevSupport',
+      'ART'
 
         # Add any other subspecs you want to use in your project
-  ]
+      ]
+
+  pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
 end

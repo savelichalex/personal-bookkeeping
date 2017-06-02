@@ -1,11 +1,21 @@
 import React from 'react';
 import {
+  ART,
   Text,
   Image,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import styled from 'styled-components/native';
 import Navigator from 'native-navigation';
+import LinearGradient from 'react-native-linear-gradient';
+
+const {
+  Surface,
+  Group,
+  Shape,
+  Path,
+} = ART;
 
 const WrapperView = styled.View`
   flex: 1;
@@ -13,10 +23,9 @@ const WrapperView = styled.View`
   padding-bottom: 40;
 `;
 
-const StartedWrapper = styled.View`
+const StartedWrapper = styled(LinearGradient)`
   flex: 3;
   flex-direction: column;
-  background-color: #193352;
 `;
 
 const Balance = {
@@ -24,15 +33,18 @@ const Balance = {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding-top: 20;
+    padding-top: 30;
   `,
   Text: styled.Text`
     color: white;
     font-size: 24;
     font-weight: bold;
+    background-color: transparent;
   `,
   CircleOutter: styled.View`
+    flex: 1;
     flex-direction: row;
+    align-items: center;
     justify-content: center;
   `,
   CircleOutterBorder: styled.View`
@@ -42,12 +54,28 @@ const Balance = {
     border-radius: 117;
     align-items: center;
     justify-content: center;
+    position: relative;
+    background-color: transparent;
   `,
   CircleInnerBorder: styled.View`
     border: 1px solid #272727;
-    width: 186;
-    height: 186;
-    border-radius: 93;
+    width: 184;
+    height: 184;
+    border-radius: 92;
+    position: absolute;
+    top: 14;
+    left: 14;
+    right: 14;
+    bottom: 14;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+  `,
+  CircleButtons: styled.View`
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 130;
   `,
 };
 
@@ -81,19 +109,115 @@ const Additional = {
   `,
 };
 
+const circlePath = (cx, cy, r, startDegree, endDegree) => {
+  let p = Path();
+  if (Platform.OS === 'ios') {
+    p.path.push(0, cx + r, cy);
+    p.path.push(4, cx, cy, r, startDegree * Math.PI / 180, endDegree * Math.PI / 180, 1);
+  } else {
+    // For Android we have to resort to drawing low-level Path primitives, as ART does not support
+    // arbitrary circle segments. It also does not support strokeDash.
+    // Furthermore, the ART implementation seems to be buggy/different than the iOS one.
+    // MoveTo is not needed on Android
+    p.path.push(4, cx, cy, r, startDegree * Math.PI / 180, (startDegree - endDegree) * Math.PI / 180, 0);
+  }
+  return p;
+};
+
+const Circle = ({ size, width, minusPer }) => {
+  const plusPath = circlePath(
+    size / 2, size / 2, size / 2 - width / 2, 0, 360,
+  );
+  const minusPath = circlePath(
+    size / 2, size / 2, size / 2 - width / 2, 0, 360 * minusPer / 100,
+  );
+  return (
+    <Surface
+      width={size}
+      height={size}
+    >
+      <Group
+        rotation={-90}
+        originX={size / 2}
+        originY={size / 2}
+      >
+        <Shape
+          d={plusPath}
+          stroke="#A4EEAA"
+          strokeWidth={width}
+        />
+        <Shape
+          d={minusPath}
+          stroke="#FF9D9D"
+          strokeWidth={width}
+          strokeCap={'square'}
+        />
+      </Group>
+    </Surface>
+  );
+};
+
+const Plus = ({ size, width }) => (
+  <Surface
+    width={size}
+    height={size}
+  >
+    <Group>
+      <Shape
+        d={`M 0 ${size /  2} L ${size} ${size / 2}`}
+        stroke="#fff"
+        strokeWidth={width}
+        strokeCap={'square'}
+      />
+      <Shape
+        d={`M ${size /  2} 0 L ${size / 2} ${size}`}
+        stroke="#fff"
+        strokeWidth={width}
+        strokeCap={'square'}
+      />
+    </Group>
+  </Surface>
+);
+
+const Minus = ({ size, width }) => (
+  <Surface
+    width={size}
+    height={width}
+    >
+    <Shape
+      d={`M 0 ${width /  2} L ${size} ${width / 2}`}
+      stroke="#fff"
+      strokeWidth={width}
+      strokeCap={'square'}
+    />
+  </Surface>
+);
+
 const MainScreen = () => (
   <Navigator.Config
     hidden={true}
   >
     <WrapperView>
-      <StartedWrapper>
+      <StartedWrapper
+        start={{ x: 0.0, y: 0.0 }}
+        end={{ x: 1.0, y: 1.0 }}
+        colors={['#537895', '#09203F']}
+      >
         <Balance.Wrapper>
           <Balance.Text>Баланс: 10000 р.</Balance.Text>
         </Balance.Wrapper>
         <Balance.CircleOutter>
           <Balance.CircleOutterBorder>
+            <Circle size={213} width={14} minusPer={25} />
             <Balance.CircleInnerBorder>
-
+              <Balance.CircleButtons>
+                <TouchableOpacity>
+                  <Plus size={45} width={8} />
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <Minus size={45} width={8} />
+                </TouchableOpacity>
+              </Balance.CircleButtons>
             </Balance.CircleInnerBorder>
           </Balance.CircleOutterBorder>
         </Balance.CircleOutter>
