@@ -11,8 +11,12 @@ import ListScreen from './src/features/ListScreen';
 import SettingsScreen from './src/features/SettingsScreen';
 import Tabs from './src/features/Tabs';
 
+import AddRecordWithCategoryScreen from './src/features/AddRecordWithCategoryScreen';
+
 Navigator.registerScreen('Home', () => MainScreen);
 Navigator.registerScreen('List', () => ListScreen);
 Navigator.registerScreen('Settings', () => SettingsScreen);
+
+Navigator.registerScreen('AddRecordWithCategory', () => AddRecordWithCategoryScreen);
 
 Navigator.registerScreen('Main', () => Tabs, { mode: 'tabs' });

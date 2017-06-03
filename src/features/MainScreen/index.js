@@ -211,10 +211,14 @@ const MainScreen = () => (
             <Circle size={213} width={14} minusPer={25} />
             <Balance.CircleInnerBorder>
               <Balance.CircleButtons>
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => Navigator.present('AddRecordWithCategory', { isCost: true })}
+                >
                   <Plus size={45} width={8} />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => Navigator.present('AddRecordWithCategory', { isCost: false })}
+                >
                   <Minus size={45} width={8} />
                 </TouchableOpacity>
               </Balance.CircleButtons>
