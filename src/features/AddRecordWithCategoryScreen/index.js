@@ -9,6 +9,12 @@ import Navigator from 'native-navigation';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+import ReadyButton from '../../common/components/ReadyButton';
+
+import {
+  chunk,
+} from '../../common/utils';
+
 const Wrapper = styled.View`
   flex: 1;
   flex-direction: column;
@@ -50,7 +56,7 @@ const CategoriesWrapper = styled.View`
 `;
 
 const CategoriesInner = styled(ScrollView)`
-  flex: 3;
+  flex: 1;
   margin-bottom: 10;
 `;
 
@@ -72,27 +78,8 @@ const Category = styled(TouchableOpacity)`
 `;
 
 const ReadyWrapper = styled.View`
-  flex: 1;
   flex-direction: row;
   justify-content: center;
-`;
-
-const Spacer = styled.View`
-  flex: 0.3;
-`;
-
-const ReadyButton = styled(TouchableOpacity)`
-  flex: 0.4;
-  border: 2px solid #3F607D;
-  border-radius: 50;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ReadyButtonText = styled.Text`
-  color: #3F607D;
-  font-size: 18;
-  font-weight: bold;
 `;
 
 const PlusCategory = (
@@ -102,18 +89,6 @@ const PlusCategory = (
     <Icon name="plus" size={40} color="#3F607D" />
   </Category>
 );
-
-const chunk = (arr, len) => {
-  const chunks = [];
-  let i = 0;
-  const n = arr.length;
-
-  while (i < n) {
-    chunks.push(arr.slice(i, i += len));
-  }
-
-  return chunks;
-};
 
 const createCategoryRows = (categories) => {
   const plusComp = (
@@ -187,11 +162,7 @@ const AddRecordWithCategoryScreen = ({
           }
         </CategoriesInner>
         <ReadyWrapper>
-          <Spacer />
-          <ReadyButton>
-            <ReadyButtonText>Готово</ReadyButtonText>
-          </ReadyButton>
-          <Spacer />
+          <ReadyButton>Готово</ReadyButton>
         </ReadyWrapper>
       </CategoriesWrapper>
     </Wrapper>
