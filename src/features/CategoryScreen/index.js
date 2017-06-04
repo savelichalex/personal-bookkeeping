@@ -200,7 +200,7 @@ const CategoryScreen = ({
        </Icons.List>
        <Icons.ReadyButton>
          <ReadyButton
-           disabled
+           disabled={titleValue === '' || activeIcon == null}
          >Сохранить</ReadyButton>
        </Icons.ReadyButton>
       </Icons.Wrapper>
