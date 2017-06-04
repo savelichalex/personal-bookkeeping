@@ -7,6 +7,7 @@ import {
 import styled from 'styled-components/native';
 import Navigator from 'native-navigation';
 import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Wrapper = styled.View`
   flex: 1;
@@ -66,6 +67,8 @@ const Category = styled(TouchableOpacity)`
   border-width: 4;
   border-radius: 40;
   border-style: dashed;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ReadyWrapper = styled.View`
@@ -92,7 +95,13 @@ const ReadyButtonText = styled.Text`
   font-weight: bold;
 `;
 
-const PlusCategory = Category;
+const PlusCategory = (
+  <Category
+    onPress={() => Navigator.push('Category')}
+  >
+    <Icon name="plus" size={40} color="#3F607D" />
+  </Category>
+);
 
 const chunk = (arr, len) => {
   const chunks = [];
@@ -108,7 +117,7 @@ const chunk = (arr, len) => {
 
 const createCategoryRows = (categories) => {
   const plusComp = (
-    <PlusCategory />
+    PlusCategory
   );
 
   const categoriesComps = categories.map(() => (
