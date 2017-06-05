@@ -1,6 +1,8 @@
 PODS:
   - BVLinearGradient (2.0.0):
     - React
+  - Interactable (0.0.9):
+    - React
   - native-navigation (0.2.1):
     - React
   - React (0.44.2):
@@ -33,6 +35,7 @@ PODS:
 
 DEPENDENCIES:
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
+  - Interactable (from `../node_modules/react-native-interactable`)
   - native-navigation (from `../node_modules/native-navigation`)
   - React/ART (from `../node_modules/react-native`)
   - React/Core (from `../node_modules/react-native`)
@@ -48,6 +51,8 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   BVLinearGradient:
     :path: "../node_modules/react-native-linear-gradient"
+  Interactable:
+    :path: "../node_modules/react-native-interactable"
   native-navigation:
     :path: "../node_modules/native-navigation"
   React:
@@ -59,11 +64,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BVLinearGradient: 2141b67ea06d9b1077ca68c9d6f89fa38c5f8450
+  Interactable: 0a9f2a42b02ea03114d7e03e714d946a65cd8d0b
   native-navigation: 0bc771c8a427dfb0d31eb9707dde48e9fbac42fa
   React: 68b26ea7726bf0731e954db0187fd8b749ec2863
   RNVectorIcons: 6d98d83e944d15014d8071dd9819beb094c61133
   Yoga: 735d941f871ac6c4853334c164c424e013a79a17
 
-PODFILE CHECKSUM: 8fb93503001425a3ade935225674fd2b9b81baab
+PODFILE CHECKSUM: 0d77c9d0161100f71e6f18e7bb255b47a4bfb067
 
 COCOAPODS: 1.2.1

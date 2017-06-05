@@ -5,6 +5,8 @@ import styled from 'styled-components/native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+import Row from './Row';
+
 const Wrapper = styled.View`
   flex: 1;
   flex-direction: column;
@@ -45,12 +47,12 @@ const List = styled(FlatList)`
 `;
 
 const ListRow = styled.View`
-  padding-top: 10;
-  padding-left: 10;
-  padding-right: 10;
-  padding-bottom: 10;
+  flex: 1;
+  padding-left: 20;
+  padding-right: 20;
   border-bottom-width: 1;
   border-bottom-color: #ccc;
+  justify-content: center;
 `;
 
 const ListRowText = styled.Text`
@@ -95,14 +97,14 @@ const ListScreen = () => (
       <CategoriesWrapper>
         <Categories
           horizontal
-          >
-          {getCategories().map(({ name }) => (
+        >
+          {getCategories().map((item) => (
             <Category>
               <Icon
-                name={name}
+                name={item}
                 size={25}
                 color="#3F607D"
-                />
+              />
             </Category>
           ))}
         </Categories>
@@ -110,9 +112,11 @@ const ListScreen = () => (
     <List
       data={records}
       renderItem={({ item: { name } }) => (
-        <ListRow>
-          <ListRowText>{name}</ListRowText>
-        </ListRow>
+        <Row>
+          <ListRow>
+            <ListRowText>{name}</ListRowText>
+          </ListRow>
+        </Row>
       )}
     />
     </Wrapper>
