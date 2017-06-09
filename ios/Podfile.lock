@@ -7,6 +7,8 @@ PODS:
     - React
   - React (0.44.2):
     - React/Core (= 0.44.2)
+  - react-native-sqlite-storage (3.3.1):
+    - React
   - React/ART (0.44.2):
     - React/Core
   - React/Core (0.44.2):
@@ -37,6 +39,7 @@ DEPENDENCIES:
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - Interactable (from `../node_modules/react-native-interactable`)
   - native-navigation (from `../node_modules/native-navigation`)
+  - react-native-sqlite-storage (from `../node_modules/react-native-sqlite-storage`)
   - React/ART (from `../node_modules/react-native`)
   - React/Core (from `../node_modules/react-native`)
   - React/DevSupport (from `../node_modules/react-native`)
@@ -57,6 +60,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/native-navigation"
   React:
     :path: "../node_modules/react-native"
+  react-native-sqlite-storage:
+    :path: "../node_modules/react-native-sqlite-storage"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
   Yoga:
@@ -67,9 +72,10 @@ SPEC CHECKSUMS:
   Interactable: 0a9f2a42b02ea03114d7e03e714d946a65cd8d0b
   native-navigation: 0bc771c8a427dfb0d31eb9707dde48e9fbac42fa
   React: 68b26ea7726bf0731e954db0187fd8b749ec2863
+  react-native-sqlite-storage: a1cc9553fd37a467f1b9ea6d12d21ece6b22d562
   RNVectorIcons: 6d98d83e944d15014d8071dd9819beb094c61133
   Yoga: 735d941f871ac6c4853334c164c424e013a79a17
 
-PODFILE CHECKSUM: 0d77c9d0161100f71e6f18e7bb255b47a4bfb067
+PODFILE CHECKSUM: 395e004681007186c1551fc915fc742249710a59
 
 COCOAPODS: 1.2.1
