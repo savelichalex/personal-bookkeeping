@@ -9,6 +9,7 @@ import {
 import styled from 'styled-components/native';
 import Navigator from 'native-navigation';
 import LinearGradient from 'react-native-linear-gradient';
+import { connect } from '../../db';
 
 const {
   Surface,
@@ -193,7 +194,7 @@ const Minus = ({ size, width }) => (
   </Surface>
 );
 
-const MainScreen = () => (
+const MainScreen = ({ income, cost, balance, costPer, }) => (
   <Navigator.Config
     hidden={true}
   >
@@ -204,11 +205,11 @@ const MainScreen = () => (
         colors={['#537895', '#09203F']}
       >
         <Balance.Wrapper>
-          <Balance.Text>Баланс: 10000 р.</Balance.Text>
+          <Balance.Text>Баланс: {balance} р.</Balance.Text>
         </Balance.Wrapper>
         <Balance.CircleOutter>
           <Balance.CircleOutterBorder>
-            <Circle size={213} width={14} minusPer={25} />
+            <Circle size={213} width={14} minusPer={costPer} />
             <Balance.CircleInnerBorder>
               <Balance.CircleButtons>
                 <TouchableOpacity
@@ -235,11 +236,11 @@ const MainScreen = () => (
         <Additional.Inner>
           <Additional.Row>
             <Additional.Cell>Доходы:</Additional.Cell>
-            <Additional.Cell>50000 р.</Additional.Cell>
+            <Additional.Cell>{income} р.</Additional.Cell>
           </Additional.Row>
           <Additional.Row>
             <Additional.Cell>Расходы:</Additional.Cell>
-            <Additional.Cell>40000 р.</Additional.Cell>
+            <Additional.Cell>{cost} р.</Additional.Cell>
           </Additional.Row>
         </Additional.Inner>
         <Additional.Arrow>
@@ -252,4 +253,33 @@ const MainScreen = () => (
   </Navigator.Config>
 );
 
-export default MainScreen;
+export default connect(
+  [
+    () => "SELECT sum(amount) FROM Records WHERE type = 'income'",
+    () => "SELECT sum(amount) FROM Records WHERE type = 'cost'",
+  ],
+  (incomeSet, costSet) => {
+    if (incomeSet == null || costSet == null) {
+      return ({
+        income: 0,
+        cost: 0,
+        balance: 0,
+        costPer: 50,
+      });
+    }
+
+    const income = incomeSet.rows.item(0)['sum(amount)'];
+    const cost = costSet.rows.item(0)['sum(amount)'];
+    const balance = income - cost;
+    const costPer = balance > 0
+          ? Math.floor(cost / income * 100)
+          : 100;
+
+    return ({
+      income,
+      cost,
+      balance,
+      costPer,
+    });
+  },
+)(MainScreen);
