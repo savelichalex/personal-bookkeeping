@@ -104,12 +104,20 @@ class Tables {
   }
 
   update(query) {
-    db.executeSql(query(this.name))
-      .then(this.runListeners);
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(query)
+          .then(this.runListeners)
+          .then(resolve)
+          .catch(reject);
+      });
+    });
   }
 }
 
 const tables = new Tables();
+
+export const runQuery = (query) => tables.update(query)
 
 export const connect = (queries, toState) => ConnectedComponent => (
   class extends Component {

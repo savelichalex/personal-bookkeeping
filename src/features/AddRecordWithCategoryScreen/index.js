@@ -14,6 +14,8 @@ import ReadyButton from '../../common/components/ReadyButton';
 import {
   chunk,
 } from '../../common/utils';
+import { connect, mapRows } from '../../db';
+import { createNewRecord } from './actions';
 
 const Wrapper = styled.View`
   flex: 1;
@@ -77,6 +79,17 @@ const Category = styled(TouchableOpacity)`
   justify-content: center;
 `;
 
+const CategoryActive = styled.View`
+  width: 80;
+  height: 80;
+  border-color: #3F607D;
+  background-color: #3F607D;
+  border-width: 4;
+  border-radius: 40;
+  align-items: center;
+  justify-content: center;
+`;
+
 const ReadyWrapper = styled.View`
   flex-direction: row;
   justify-content: center;
@@ -90,13 +103,25 @@ const PlusCategory = (
   </Category>
 );
 
-const createCategoryRows = (categories) => {
+const createCategoryRows = (categories, currentCategoryId, chooseCategory) => {
   const plusComp = (
     PlusCategory
   );
 
-  const categoriesComps = categories.map(() => (
-    <Category />
+  const categoriesComps = categories.map(({ id, icon }) => (
+    id === currentCategoryId
+      ? (
+        <CategoryActive>
+          <Icon name={icon} size={40} color="#fff" />
+        </CategoryActive>
+      )
+      : (
+        <Category
+          onPress={() => chooseCategory(id)}
+        >
+          <Icon name={icon} size={40} color="#3F607D" />
+        </Category>
+      )
   ));
 
   return chunk(
@@ -115,6 +140,11 @@ const AddRecordWithCategoryScreen = ({
   changeSumValue,
   noteValue,
   changeNoteValue,
+  currentCategoryId,
+  chooseCategory,
+  categories,
+  createRecord,
+  closeScreen,
 }) => (
   <Navigator.Config
     title={`Добавить ${isCost ? 'доход' : 'расход'}`}
@@ -122,7 +152,7 @@ const AddRecordWithCategoryScreen = ({
     translucent
     leftImage={require('../../../images/nav-back-icon.png')}
     leftTintColor="#fff"
-    onLeftPress={() => Navigator.dismiss()}
+    onLeftPress={closeScreen}
     hidden={false}
   >
     <Wrapper>
@@ -157,12 +187,22 @@ const AddRecordWithCategoryScreen = ({
         >
           {
             createCategoryRows(
-              [1,1,1,1,1,1,1]
+              categories,
+              currentCategoryId,
+              chooseCategory,
             )
           }
         </CategoriesInner>
         <ReadyWrapper>
-          <ReadyButton>Готово</ReadyButton>
+          <ReadyButton
+            disabled={
+              sumValue === '' ||
+              currentCategoryId == null
+            }
+            onPress={createRecord}
+          >
+            Готово
+          </ReadyButton>
         </ReadyWrapper>
       </CategoriesWrapper>
     </Wrapper>
@@ -176,11 +216,30 @@ class AddRecordWithCategoryScreenWrap extends Component {
     this.state = {
       sum: '',
       note: '',
+      categoryId: null,
     };
   }
 
   changeSum = (sum) => { this.setState({ sum }) }
   changeNote = (note) => { this.setState({ note }) }
+  chooseCategory = (categoryId) => this.setState({ categoryId })
+
+  createRecord = () => {
+    const {
+      sum, note, categoryId,
+    } = this.state;
+
+    createNewRecord(
+      this.props.isCost ? 'income' : 'cost',
+      sum,
+      note,
+      categoryId,
+    ).then(this.closeScreen);
+  }
+
+  closeScreen() {
+    Navigator.dismiss();
+  }
 
   render() {
     return (
@@ -189,10 +248,31 @@ class AddRecordWithCategoryScreenWrap extends Component {
         changeSumValue={this.changeSum}
         noteValue={this.state.note}
         changeNoteValue={this.changeNote}
+        currentCategoryId={this.state.categoryId}
+        chooseCategory={this.chooseCategory}
+        createRecord={this.createRecord}
+        closeScreen={this.closeScreen}
         {...this.props}
       />
     );
   }
 }
 
-export default AddRecordWithCategoryScreenWrap;
+export default connect(
+  [
+    () => "SELECT id, icon FROM Categories",
+  ],
+  (categoriesSet) => {
+    if (categoriesSet == null) {
+      return ({
+        categories: [],
+      });
+    }
+
+    const categories = mapRows(categoriesSet.rows);
+
+    return ({
+      categories,
+    });
+  },
+)(AddRecordWithCategoryScreenWrap);
