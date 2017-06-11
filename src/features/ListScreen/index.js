@@ -6,6 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Row from './Row';
+import { connect, mapRows } from '../../db';
 
 const Wrapper = styled.View`
   flex: 1;
@@ -61,30 +62,7 @@ const ListRowText = styled.Text`
   font-weight: bold;
 `;
 
-const records = [
-  { name: '1', category: 'star' },
-  { name: '2', category: 'shopping-cart' },
-  { name: '3', category: 'cloud' },
-  { name: '4', category: 'star' },
-  { name: '5', category: 'shopping-cart' },
-  { name: '6', category: 'cloud' },
-  { name: '7', category: 'star' },
-  { name: '8', category: 'shopping-cart' },
-  { name: '9', category: 'cloud' },
-  { name: '10', category: 'star' },
-];
-
-const getCategories = () => (
-  records.reduce((acc, { category }) => {
-    if (acc.indexOf(category) === -1) {
-      acc.push(category);
-    }
-
-    return acc;
-  }, [])
-);
-
-const ListScreen = () => (
+const ListScreen = ({ categories, records }) => (
   <Navigator.Config
     hidden
   >
@@ -98,10 +76,10 @@ const ListScreen = () => (
         <Categories
           horizontal
         >
-          {getCategories().map((item) => (
+          {categories.map(({ icon }) => (
             <Category>
               <Icon
-                name={item}
+                name={icon}
                 size={25}
                 color="#3F607D"
               />
@@ -111,10 +89,10 @@ const ListScreen = () => (
       </CategoriesWrapper>
     <List
       data={records}
-      renderItem={({ item: { name } }) => (
+      renderItem={({ item: { amount } }) => (
         <Row>
           <ListRow>
-            <ListRowText>{name}</ListRowText>
+            <ListRowText>{amount} р.</ListRowText>
           </ListRow>
         </Row>
       )}
@@ -123,4 +101,27 @@ const ListScreen = () => (
   </Navigator.Config>
 );
 
-export default ListScreen;
+export default connect(
+  [
+    () => "SELECT id, icon FROM Categories",
+    () => "SELECT id, type, amount FROM Records",
+  ],
+  (categoriesSet, recordsSet) => {
+    if (categoriesSet == null || recordsSet == null) {
+      return ({
+        categories: [],
+        records: [],
+      });
+    }
+
+    const categories = mapRows(categoriesSet.rows);
+    const records = mapRows(recordsSet.rows);
+
+    // TODO: filter categories by records category id
+
+    return ({
+      categories,
+      records,
+    });
+  },
+)(ListScreen);

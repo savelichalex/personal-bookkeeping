@@ -148,3 +148,13 @@ export const connect = (queries, toState) => ConnectedComponent => (
     }
   }
 );
+
+export const mapRows = (rows) => {
+  const result = new Array(rows.length);
+
+  for(var x = 0; x < rows.length; x++) {
+    result[x] = rows.item(x);
+  }
+
+  return result;
+};
