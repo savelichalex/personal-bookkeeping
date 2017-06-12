@@ -25,5 +25,7 @@ target 'PersonalBookkeeping' do
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+  pod 'Interactable', :path => '../node_modules/react-native-interactable'
+  pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
 
 end

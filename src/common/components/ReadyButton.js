@@ -85,11 +85,11 @@ const ReadyButton = ({
 
   return (
     <Wrapper
-      onPress={disabled ? onPress : null}
+      onPress={onPress}
     >
       <Text>{children}</Text>
     </Wrapper>
   );
-}
+};
 
 export default ReadyButton;

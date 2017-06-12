@@ -5,13 +5,16 @@ import styled from 'styled-components/native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+import Row from './Row';
+import { connect, mapRows } from '../../db';
+
 const Wrapper = styled.View`
   flex: 1;
   flex-direction: column;
 `;
 
 const Header = styled(LinearGradient)`
-  height: 80;
+  height: ${props => props.height};
 `;
 
 const CategoriesWrapper = styled.View`
@@ -45,12 +48,12 @@ const List = styled(FlatList)`
 `;
 
 const ListRow = styled.View`
-  padding-top: 10;
-  padding-left: 10;
-  padding-right: 10;
-  padding-bottom: 10;
+  flex: 1;
+  padding-left: 20;
+  padding-right: 20;
   border-bottom-width: 1;
   border-bottom-color: #ccc;
+  justify-content: center;
 `;
 
 const ListRowText = styled.Text`
@@ -59,30 +62,7 @@ const ListRowText = styled.Text`
   font-weight: bold;
 `;
 
-const records = [
-  { name: '1', category: 'star' },
-  { name: '2', category: 'shopping-cart' },
-  { name: '3', category: 'cloud' },
-  { name: '4', category: 'star' },
-  { name: '5', category: 'shopping-cart' },
-  { name: '6', category: 'cloud' },
-  { name: '7', category: 'star' },
-  { name: '8', category: 'shopping-cart' },
-  { name: '9', category: 'cloud' },
-  { name: '10', category: 'star' },
-];
-
-const getCategories = () => (
-  records.reduce((acc, { category }) => {
-    if (acc.indexOf(category) === -1) {
-      acc.push(category);
-    }
-
-    return acc;
-  }, [])
-);
-
-const ListScreen = () => (
+const ListScreen = ({ categories, records, nativeNavigationInitialBarHeight, }) => (
   <Navigator.Config
     hidden
   >
@@ -91,32 +71,60 @@ const ListScreen = () => (
         start={{ x: 0.0, y: 0.0 }}
         end={{ x: 1.0, y: 1.0 }}
         colors={['#537895', '#09203F']}
+        height={nativeNavigationInitialBarHeight}
       />
       <CategoriesWrapper>
         <Categories
           horizontal
-          >
-          {getCategories().map(({ name }) => (
+        >
+          {categories.map(({ icon }) => (
             <Category>
               <Icon
-                name={name}
+                name={icon}
                 size={25}
                 color="#3F607D"
-                />
+              />
             </Category>
           ))}
         </Categories>
       </CategoriesWrapper>
     <List
       data={records}
-      renderItem={({ item: { name } }) => (
-        <ListRow>
-          <ListRowText>{name}</ListRowText>
-        </ListRow>
+      renderItem={({ item }) => (
+        <Row
+          onEdit={() => Navigator.present('AddRecordWithCategory', item)}
+        >
+          <ListRow>
+            <ListRowText>{item.amount} р.</ListRowText>
+          </ListRow>
+        </Row>
       )}
     />
     </Wrapper>
   </Navigator.Config>
 );
 
-export default ListScreen;
+export default connect(
+  [
+    () => "SELECT id, icon FROM Categories",
+    () => "SELECT id, type, amount, note, category FROM Records",
+  ],
+  (categoriesSet, recordsSet) => {
+    if (categoriesSet == null || recordsSet == null) {
+      return ({
+        categories: [],
+        records: [],
+      });
+    }
+
+    const categories = mapRows(categoriesSet.rows);
+    const records = mapRows(recordsSet.rows);
+
+    // TODO: filter categories by records category id
+
+    return ({
+      categories,
+      records,
+    });
+  },
+)(ListScreen);
