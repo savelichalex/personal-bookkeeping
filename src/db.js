@@ -107,10 +107,13 @@ class Tables {
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(query)
-          .then(this.runListeners)
+          .then(res => {
+            this.runListeners();
+            return res;
+          })
           .then(resolve)
-          .catch(reject);
-      });
+          .catch(reject);;
+      })
     });
   }
 }

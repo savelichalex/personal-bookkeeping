@@ -14,7 +14,7 @@ const Wrapper = styled.View`
 `;
 
 const Header = styled(LinearGradient)`
-  height: 80;
+  height: ${props => props.height};
 `;
 
 const CategoriesWrapper = styled.View`
@@ -62,7 +62,7 @@ const ListRowText = styled.Text`
   font-weight: bold;
 `;
 
-const ListScreen = ({ categories, records }) => (
+const ListScreen = ({ categories, records, nativeNavigationInitialBarHeight, }) => (
   <Navigator.Config
     hidden
   >
@@ -71,6 +71,7 @@ const ListScreen = ({ categories, records }) => (
         start={{ x: 0.0, y: 0.0 }}
         end={{ x: 1.0, y: 1.0 }}
         colors={['#537895', '#09203F']}
+        height={nativeNavigationInitialBarHeight}
       />
       <CategoriesWrapper>
         <Categories
@@ -89,10 +90,12 @@ const ListScreen = ({ categories, records }) => (
       </CategoriesWrapper>
     <List
       data={records}
-      renderItem={({ item: { amount } }) => (
-        <Row>
+      renderItem={({ item }) => (
+        <Row
+          onEdit={() => Navigator.present('AddRecordWithCategory', item)}
+        >
           <ListRow>
-            <ListRowText>{amount} р.</ListRowText>
+            <ListRowText>{item.amount} р.</ListRowText>
           </ListRow>
         </Row>
       )}
@@ -104,7 +107,7 @@ const ListScreen = ({ categories, records }) => (
 export default connect(
   [
     () => "SELECT id, icon FROM Categories",
-    () => "SELECT id, type, amount FROM Records",
+    () => "SELECT id, type, amount, note, category FROM Records",
   ],
   (categoriesSet, recordsSet) => {
     if (categoriesSet == null || recordsSet == null) {

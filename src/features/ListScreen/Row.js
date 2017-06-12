@@ -64,6 +64,13 @@ class Row extends Component {
     this.deltaX = new Animated.Value(0);
   }
 
+  onEdit = () => {
+    this.refs.main.snapTo({ id: 0 });
+    if (this.props.onEdit) {
+      this.props.onEdit();
+    }
+  }
+
   render() {
     return (
       <View>
@@ -72,8 +79,10 @@ class Row extends Component {
             style={{
               transform: createTranslateX(this.deltaX, [-144, 0], [0, 144]),
             }}
+          >
+            <Button.Inner
+              onPress={this.onEdit}
             >
-            <Button.Inner>
               <Button.Icon source={require('../../../images/edit-icon.png')} />
             </Button.Inner>
           </Button.Edit>

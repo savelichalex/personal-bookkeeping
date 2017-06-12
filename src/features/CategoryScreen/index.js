@@ -11,10 +11,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import IconGlyphs from 'react-native-vector-icons/glyphmaps/FontAwesome.json';
 
 import ReadyButton from '../../common/components/ReadyButton';
-
-import {
-  chunk,
-} from '../../common/utils';
+import { chunk } from '../../common/utils';
+import { createNewCategory } from './actions';
 
 const Wrapper = styled.View`
   flex: 1;
@@ -125,6 +123,8 @@ const CategoryScreen = ({
   icons,
   activeIcon,
   setActiveIcon,
+  createCategory,
+  closeScreen,
 }) => (
   <Navigator.Config
     title="Добавить категорию"
@@ -132,7 +132,7 @@ const CategoryScreen = ({
     translucent
     leftImage={require('../../../images/nav-back-icon.png')}
     leftTintColor="#fff"
-    onLeftPress={() => Navigator.pop()}
+    onLeftPress={closeScreen}
     hidden={false}
   >
     <Wrapper>
@@ -201,6 +201,7 @@ const CategoryScreen = ({
        <Icons.ReadyButton>
          <ReadyButton
            disabled={titleValue === '' || activeIcon == null}
+           onPress={createCategory}
          >Сохранить</ReadyButton>
        </Icons.ReadyButton>
       </Icons.Wrapper>
@@ -244,6 +245,24 @@ class CategoryScreenWrap extends Component {
     });
   }
 
+  createCategory = () => {
+    const {
+      title,
+      activeIcon,
+    } = this.state;
+
+    createNewCategory(
+      title,
+      true,
+      activeIcon,
+    )
+      .then(this.closeScreen);
+  }
+
+  closeScreen(id) {
+    Navigator.pop({ id });
+  }
+
   render() {
     return (
       <CategoryScreen
@@ -254,6 +273,8 @@ class CategoryScreenWrap extends Component {
         icons={chunk(this.state.icons, 4)}
         activeIcon={this.state.activeIcon}
         setActiveIcon={this.setActiveIcon}
+        createCategory={this.createCategory}
+        closeScreen={this.closeScreen}
         {...this.props}
       />
     );

@@ -15,7 +15,7 @@ import {
   chunk,
 } from '../../common/utils';
 import { connect, mapRows } from '../../db';
-import { createNewRecord } from './actions';
+import { createNewRecord, updateRecord } from './actions';
 
 const Wrapper = styled.View`
   flex: 1;
@@ -136,6 +136,7 @@ const createCategoryRows = (categories, currentCategoryId, chooseCategory) => {
 
 const AddRecordWithCategoryScreen = ({
   isCost,
+  isEdit,
   sumValue,
   changeSumValue,
   noteValue,
@@ -144,10 +145,11 @@ const AddRecordWithCategoryScreen = ({
   chooseCategory,
   categories,
   createRecord,
+  updateRecord,
   closeScreen,
 }) => (
   <Navigator.Config
-    title={`Добавить ${isCost ? 'доход' : 'расход'}`}
+    title={`${isEdit ? 'Редактировать' : 'Добавить'} ${isCost ? 'доход' : 'расход'}`}
     titleColor="#fff"
     translucent
     leftImage={require('../../../images/nav-back-icon.png')}
@@ -199,7 +201,7 @@ const AddRecordWithCategoryScreen = ({
               sumValue === '' ||
               currentCategoryId == null
             }
-            onPress={createRecord}
+            onPress={isEdit ? updateRecord : createRecord}
           >
             Готово
           </ReadyButton>
@@ -210,13 +212,13 @@ const AddRecordWithCategoryScreen = ({
 );
 
 class AddRecordWithCategoryScreenWrap extends Component {
-  constructor() {
+  constructor({ id, amount, type, note, category }) {
     super();
 
     this.state = {
-      sum: '',
-      note: '',
-      categoryId: null,
+      sum: (amount || '').toString(),
+      note: note || '',
+      categoryId: category || null,
     };
   }
 
@@ -237,6 +239,20 @@ class AddRecordWithCategoryScreenWrap extends Component {
     ).then(this.closeScreen);
   }
 
+  updateRecord = () => {
+    const {
+      sum, note, categoryId,
+    } = this.state;
+    const { id } = this.props;
+
+    updateRecord(
+      id,
+      sum,
+      note,
+      categoryId,
+    ).then(this.closeScreen);
+  }
+
   closeScreen() {
     Navigator.dismiss();
   }
@@ -244,6 +260,7 @@ class AddRecordWithCategoryScreenWrap extends Component {
   render() {
     return (
       <AddRecordWithCategoryScreen
+        isEdit={this.props.id != null}
         sumValue={this.state.sum}
         changeSumValue={this.changeSum}
         noteValue={this.state.note}
@@ -251,6 +268,7 @@ class AddRecordWithCategoryScreenWrap extends Component {
         currentCategoryId={this.state.categoryId}
         chooseCategory={this.chooseCategory}
         createRecord={this.createRecord}
+        updateRecord={this.updateRecord}
         closeScreen={this.closeScreen}
         {...this.props}
       />
