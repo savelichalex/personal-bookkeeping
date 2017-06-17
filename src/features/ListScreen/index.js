@@ -6,7 +6,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Row from './Row';
-import { connect, mapRows } from '../../db';
+import { connect } from '../../db';
+import { mapDbRows } from '../../common/utils';
 
 const Wrapper = styled.View`
   flex: 1;
@@ -117,8 +118,8 @@ export default connect(
       });
     }
 
-    const categories = mapRows(categoriesSet.rows);
-    const records = mapRows(recordsSet.rows);
+    const categories = mapDbRows(categoriesSet.rows);
+    const records = mapDbRows(recordsSet.rows);
 
     // TODO: filter categories by records category id
 
