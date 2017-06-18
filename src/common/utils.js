@@ -9,3 +9,13 @@ export const chunk = (arr, len) => {
 
   return chunks;
 };
+
+export const mapDbRows = (rows) => {
+  const result = new Array(rows.length);
+
+  for(var x = 0; x < rows.length; x++) {
+    result[x] = rows.item(x);
+  }
+
+  return result;
+};

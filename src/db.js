@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import SQLite from 'react-native-sqlite-storage';
 
+import { prepareSettings } from './settings';
+
 SQLite.enablePromise(true);
 
 const databaseName = 'PersonalBookkeeping.db';
@@ -43,15 +45,20 @@ const prepareDB = (instance) => {
 
     tx.executeSql(
       `CREATE TABLE IF NOT EXISTS Settings (
-         option VARCHAR(255) NOT NULL,
-         value VARCHAR(255) NOT NULL
+         option TEXT NOT NULL,
+         value TEXT NOT NULL
       )`,
     );
 
     tx.executeSql('INSERT INTO Categories (name, use_in_balance, icon) VALUES ("test", 1, "star")');
 
-    tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("income", 50000, 0, 1)');
-    tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("cost", 40000, 0, 1)');
+    tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("income", 50000, 1488315600000, 1)');
+    tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("cost", 40000, 1488315600000, 1)');
+
+    tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("income", 30000, 1497693562740, 1)');
+    tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("cost", 20000, 1497693562740, 1)');
+
+    tx.executeSql('INSERT INTO Settings (option, value) VALUES ("period", "month")')
   });
 };
 
@@ -69,10 +76,14 @@ class Tables {
     this.listeners = {};
 
     this.isOpenedDb = false;
-    openDB().then(() => {
-      this.isOpenedDb = true;
-      this.runListeners();
-    });
+    this.settings = {};
+
+    openDB()
+      .then(this.setupSettings.bind(this))
+      .then(() => {
+        this.isOpenedDb = true;
+        this.runListeners();
+      });
   }
 
   addListener(executor) {
@@ -98,7 +109,7 @@ class Tables {
           if (executor == null) {
             return;
           }
-          executor(tx.executeSql.bind(tx));
+          executor(tx.executeSql.bind(tx), this.settings);
         });
     });
   }
@@ -112,15 +123,45 @@ class Tables {
             return res;
           })
           .then(resolve)
-          .catch(reject);;
-      })
+          .catch(reject);
+      });
     });
+  }
+
+  setupSettings() {
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql("SELECT option, value FROM Settings")
+          .then(res => {
+            this.settings = prepareSettings(res);
+            return;
+          })
+          .then(resolve)
+          .catch(reject);
+      });
+    });
+  }
+
+  updateSettings(query) {
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(query)
+          .then(resolve)
+          .catch(reject);
+      })
+    })
+      .then(this.setupSettings.bind(this))
+      .then(() => {
+        this.runListeners();
+        return;
+      });
   }
 }
 
 const tables = new Tables();
 
-export const runQuery = (query) => tables.update(query)
+export const runQuery = (query) => tables.update(query);
+export const updateSettings = (query) => tables.updateSettings(query);
 
 export const connect = (queries, toState) => ConnectedComponent => (
   class extends Component {
@@ -140,9 +181,9 @@ export const connect = (queries, toState) => ConnectedComponent => (
       tables.removeListener(this.id);
     }
 
-    executor = (exec) => (
+    executor = (exec, settings) => (
       Promise.all(
-        queries.map(query => exec(query()))
+        queries.map(query => exec(query(settings)))
       )
         .then((results) => (
           this.setState(toState(...results.map(([_, result]) => result)))))
@@ -159,13 +200,3 @@ export const connect = (queries, toState) => ConnectedComponent => (
     }
   }
 );
-
-export const mapRows = (rows) => {
-  const result = new Array(rows.length);
-
-  for(var x = 0; x < rows.length; x++) {
-    result[x] = rows.item(x);
-  }
-
-  return result;
-};

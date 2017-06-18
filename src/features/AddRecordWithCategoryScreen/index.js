@@ -13,8 +13,9 @@ import ReadyButton from '../../common/components/ReadyButton';
 
 import {
   chunk,
+  mapDbRows,
 } from '../../common/utils';
-import { connect, mapRows } from '../../db';
+import { connect } from '../../db';
 import { createNewRecord, updateRecord } from './actions';
 
 const Wrapper = styled.View`
@@ -287,7 +288,7 @@ export default connect(
       });
     }
 
-    const categories = mapRows(categoriesSet.rows);
+    const categories = mapDbRows(categoriesSet.rows);
 
     return ({
       categories,
