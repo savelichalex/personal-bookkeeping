@@ -56,7 +56,9 @@ const prepareDB = (instance) => {
     tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("cost", 40000, 1488315600000, 1)');
 
     tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("income", 30000, 1497693562740, 1)');
-    tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("income", 20000, 1497693562740, 1)');
+    tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("cost", 20000, 1497693562740, 1)');
+
+    tx.executeSql('INSERT INTO Settings (option, value) VALUES ("period", "month")')
   });
 };
 
@@ -77,7 +79,7 @@ class Tables {
     this.settings = {};
 
     openDB()
-      .then(this.setupSettings)
+      .then(this.setupSettings.bind(this))
       .then(() => {
         this.isOpenedDb = true;
         this.runListeners();

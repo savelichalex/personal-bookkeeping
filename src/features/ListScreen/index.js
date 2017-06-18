@@ -108,7 +108,11 @@ const ListScreen = ({ categories, records, nativeNavigationInitialBarHeight, }) 
 export default connect(
   [
     () => "SELECT id, icon FROM Categories",
-    () => "SELECT id, type, amount, note, category FROM Records",
+    ({ periodStart }) => `
+      SELECT id, type, amount, note, category
+      FROM Records
+      WHERE created >= ${periodStart}
+    `,
   ],
   (categoriesSet, recordsSet) => {
     if (categoriesSet == null || recordsSet == null) {

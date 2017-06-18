@@ -255,8 +255,14 @@ const MainScreen = ({ income, cost, balance, costPer, }) => (
 
 export default connect(
   [
-    () => "SELECT sum(amount) FROM Records WHERE type = 'income'",
-    () => "SELECT sum(amount) FROM Records WHERE type = 'cost'",
+    ({ periodStart }) => `
+      SELECT sum(amount)
+      FROM Records
+      WHERE type = 'income' AND created >= ${periodStart}`,
+    ({ periodStart }) => `
+      SELECT sum(amount)
+      FROM Records
+      WHERE type = 'cost' AND created >= ${periodStart}`,
   ],
   (incomeSet, costSet) => {
     if (incomeSet == null || costSet == null) {

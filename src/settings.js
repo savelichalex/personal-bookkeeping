@@ -9,7 +9,7 @@ const periodMapper = {
   },
   month() {
     const date = new Date();
-    const monthStart = new Date(date.getFullYear(), date.getMonth, 1);
+    const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
 
     return +monthStart;
   },
@@ -22,11 +22,11 @@ const periodMapper = {
 
     return +weekStart;
   },
-}
+};
 
 const optionsMapper = {
   period: (value) => {
-    const periodStart = periodMapper[value];
+    const periodStart = periodMapper[value]();
 
     return {
       periodStart,
@@ -42,6 +42,9 @@ export const prepareSettings = settingsSet => (
       return acc;
     }
 
-    return Object.assign(acc, mapper(value));
-  })
+    return {
+      ...acc,
+      ...mapper(value),
+    };
+  }, {})
 );
