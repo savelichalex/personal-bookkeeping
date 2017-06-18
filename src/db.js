@@ -146,16 +146,15 @@ class Tables {
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(query)
-          .then(() => tx.executeSql("SELECT option, value FROM Settings"))
-          .then(res => {
-            this.settings = prepareSettings(res);
-            this.runListeners();
-            return res;
-          })
           .then(resolve)
           .catch(reject);
+      })
+    })
+      .then(this.setupSettings.bind(this))
+      .then(() => {
+        this.runListeners();
+        return;
       });
-    });
   }
 }
 

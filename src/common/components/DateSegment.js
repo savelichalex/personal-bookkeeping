@@ -90,16 +90,8 @@ const DATE = {
 };
 
 class DateSegmented extends Component {
-  constructor({ activeValue }) {
-    super();
-
-    this.state = {
-      activeValue,
-    };
-  }
-
   compareToActiveValue = (value) => {
-    return this.state.activeValue === value;
+    return this.props.value === value;
   }
 
   compareToText = (value) => {
@@ -109,17 +101,13 @@ class DateSegmented extends Component {
   }
 
   onPress = (activeValue) => {
-    this.setState({
-      activeValue,
-    });
-
     if (this.props.onPress) {
       this.props.onPress(activeValue);
     }
   }
 
   render() {
-    const { activeValue } = this.state;
+    const { value } = this.props;
     const comp = this.compareToActiveValue;
     const compT = this.compareToText;
 

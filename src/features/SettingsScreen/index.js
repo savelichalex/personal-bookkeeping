@@ -4,6 +4,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/native';
 import { SectionList } from 'react-native';
 import DateSegmented from '../../common/components/DateSegment';
+import { connect } from '../../db';
+import { mapDbRows } from '../../common/utils';
+import { updateDateSetting } from './actions';
 
 const Wrapper = styled.View`
   flex: 1;
@@ -43,16 +46,18 @@ const Section = {
 
 const itemRow = ({
   item: {
-    title,
-    type,
+    option,
     value,
   },
 }) => (
   <Section.ItemRow>
     <Section.ItemText>
-      {title}
+      {option === 'period' ? 'За период:' : ''}
     </Section.ItemText>
-    <DateSegmented />
+    <DateSegmented
+      value={value}
+      onPress={updateDateSetting}
+    />
   </Section.ItemRow>
 );
 
@@ -64,7 +69,7 @@ const sectionRow = ({ section: { title } }) => (
   </Section.Row>
 );
 
-const SettingsScreen = ({ nativeNavigationInitialBarHeight }) => (
+const SettingsScreen = ({ nativeNavigationInitialBarHeight, settings }) => (
   <Navigator.Config
     hidden
   >
@@ -81,9 +86,7 @@ const SettingsScreen = ({ nativeNavigationInitialBarHeight }) => (
         stickySectionHeadersEnabled={false}
         sections={[
           {
-            data: [
-              { title: 'время' },
-            ],
+            data: settings,
             title: "Основные настройки",
           },
         ]}
@@ -92,4 +95,19 @@ const SettingsScreen = ({ nativeNavigationInitialBarHeight }) => (
   </Navigator.Config>
 );
 
-export default SettingsScreen;
+export default connect(
+  [
+    () => 'SELECT option, value FROM Settings',
+  ],
+  (settingsSet) => {
+    if (settingsSet == null) {
+      return {
+        settings: [],
+      };
+    }
+
+    return {
+      settings: mapDbRows(settingsSet.rows),
+    };
+  },
+)(SettingsScreen);

@@ -26,6 +26,7 @@ const periodMapper = {
 
 const optionsMapper = {
   period: (value) => {
+    console.log(value);
     const periodStart = periodMapper[value]();
 
     return {
