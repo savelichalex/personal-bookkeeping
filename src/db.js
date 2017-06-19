@@ -148,7 +148,7 @@ class Tables {
         tx.executeSql(query)
           .then(resolve)
           .catch(reject);
-      })
+      });
     })
       .then(this.setupSettings.bind(this))
       .then(() => {

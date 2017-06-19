@@ -112,6 +112,7 @@ export default connect(
       SELECT id, type, amount, note, category
       FROM Records
       WHERE created >= ${periodStart}
+      ORDER BY created DESC
     `,
   ],
   (categoriesSet, recordsSet) => {

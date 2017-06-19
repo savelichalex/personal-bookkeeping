@@ -90,6 +90,7 @@ const Additional = {
     flex: 1;
     align-items: center;
     justify-content: center;
+    opacity: 0;
   `,
   Inner: styled.View`
     flex: 8;

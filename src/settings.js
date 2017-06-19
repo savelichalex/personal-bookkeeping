@@ -1,6 +1,6 @@
 import { mapDbRows } from './common/utils';
 
-const periodMapper = {
+var periodMapper = {
   year() {
     const date = new Date();
     const yearStart = new Date(date.getFullYear(), 0, 1);
@@ -18,15 +18,14 @@ const periodMapper = {
     const day = date.getDay();
     const diff = date.getDate() - day + (day == 0 ? -6 : 1);
 
-    const weekStart = new Date(date.setDate(diff));
+    const weekStart = new Date(date.setDate(diff)).setHours(0, 0, 0, 0);
 
-    return +weekStart;
+    return weekStart;
   },
 };
 
 const optionsMapper = {
   period: (value) => {
-    console.log(value);
     const periodStart = periodMapper[value]();
 
     return {
