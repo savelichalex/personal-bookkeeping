@@ -11,6 +11,8 @@ import Navigator from 'native-navigation';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from '../../db';
 
+import Buttons from '../../common/components/AddRecordsButtons';
+
 const {
   Surface,
   Group,
@@ -161,42 +163,6 @@ const Circle = ({ size, width, minusPer }) => {
   );
 };
 
-const Plus = ({ size, width }) => (
-  <Surface
-    width={size}
-    height={size}
-  >
-    <Group>
-      <Shape
-        d={`M 0 ${size /  2} L ${size} ${size / 2}`}
-        stroke="#fff"
-        strokeWidth={width}
-        strokeCap={'square'}
-      />
-      <Shape
-        d={`M ${size /  2} 0 L ${size / 2} ${size}`}
-        stroke="#fff"
-        strokeWidth={width}
-        strokeCap={'square'}
-      />
-    </Group>
-  </Surface>
-);
-
-const Minus = ({ size, width }) => (
-  <Surface
-    width={size}
-    height={width}
-    >
-    <Shape
-      d={`M 0 ${width /  2} L ${size} ${width / 2}`}
-      stroke="#fff"
-      strokeWidth={width}
-      strokeCap={'square'}
-    />
-  </Surface>
-);
-
 const MainScreen = ({ income, cost, balance, costPer, }) => (
   <Navigator.Config
     hidden={true}
@@ -214,18 +180,7 @@ const MainScreen = ({ income, cost, balance, costPer, }) => (
           <Balance.CircleOutterBorder>
             <Circle size={213} width={14} minusPer={costPer} />
             <Balance.CircleInnerBorder>
-              <Balance.CircleButtons>
-                <TouchableOpacity
-                  onPress={() => Navigator.present('AddRecordWithCategory', { isCost: true })}
-                >
-                  <Plus size={45} width={8} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => Navigator.present('AddRecordWithCategory', { isCost: false })}
-                >
-                  <Minus size={45} width={8} />
-                </TouchableOpacity>
-              </Balance.CircleButtons>
+              <Buttons />
             </Balance.CircleInnerBorder>
           </Balance.CircleOutterBorder>
         </Balance.CircleOutter>
