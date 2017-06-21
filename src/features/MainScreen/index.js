@@ -148,12 +148,14 @@ const Circle = ({ size, width, minusPer }) => {
           stroke="#A4EEAA"
           strokeWidth={width}
         />
-        <Shape
-          d={minusPath}
-          stroke="#FF9D9D"
-          strokeWidth={width}
-          strokeCap={'square'}
-        />
+        {minusPer > 0 && (
+          <Shape
+            d={minusPath}
+            stroke="#FF9D9D"
+            strokeWidth={width}
+            strokeCap={'square'}
+          />
+        )}
       </Group>
     </Surface>
   );
@@ -284,9 +286,9 @@ export default connect(
 
     return ({
       income,
-      cost,
-      balance,
-      costPer,
+      cost: cost || 0,
+      balance: balance || 0,
+      costPer: costPer || 0,
     });
   },
 )(MainScreen);

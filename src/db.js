@@ -51,12 +51,16 @@ const prepareDB = (instance) => {
     );
 
     tx.executeSql('INSERT INTO Categories (name, use_in_balance, icon) VALUES ("test", 1, "star")');
+    tx.executeSql('INSERT INTO Categories (name, use_in_balance, icon) VALUES ("test2", 2, "search")');
 
     tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("income", 50000, 1488315600000, 1)');
     tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("cost", 40000, 1488315600000, 1)');
 
     tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("income", 30000, 1497693562740, 1)');
     tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("cost", 20000, 1497693562740, 1)');
+
+    tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("income", 30000, 1497693562740, 2)');
+    tx.executeSql('INSERT INTO Records (type, amount, created, category) VALUES ("cost", 20000, 1497693562740, 2)');
 
     tx.executeSql('INSERT INTO Settings (option, value) VALUES ("period", "month")')
   });

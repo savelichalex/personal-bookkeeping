@@ -107,7 +107,14 @@ const ListScreen = ({ categories, records, nativeNavigationInitialBarHeight, }) 
 
 export default connect(
   [
-    () => "SELECT id, icon FROM Categories",
+    ({ periodStart }) => `
+      SELECT r.category, c.icon
+      FROM Records r
+        LEFT JOIN Categories c ON r.category = c.id
+      WHERE created >= ${periodStart}
+      GROUP BY r.category
+      ORDER BY COUNT(r.category) DESC
+    `,
     ({ periodStart }) => `
       SELECT id, type, amount, note, category
       FROM Records
