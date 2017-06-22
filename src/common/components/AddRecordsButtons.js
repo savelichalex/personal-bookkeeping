@@ -205,6 +205,22 @@ const coords = [
   ['main', -30 + 30, 105 + 30, Math.pow(30, 2)],
 ];
 
+const catsByLength = {
+  1: [[1, Button1]],
+  2: [[4, Button4], [5, Button5]],
+  3: [[1, Button1], [2, Button2], [3, Button3]],
+  4: [[4, Button4], [5, Button5], [2, Button2], [3, Button3]],
+  5: [[1, Button1], [4, Button4], [5, Button5], [2, Button2], [3, Button3]],
+  6: [
+    [1, Button1],
+    [2, Button2], [3, Button3], [4, Button4],
+    [5, Button5], [6, Button6]],
+  7: [
+    [1, Button1],
+    [2, Button2], [3, Button3], [4, Button4],
+    [5, Button5], [6, Button6], [7, Button7]],
+};
+
 class AddRecord extends Component {
   constructor() {
     super();
@@ -308,26 +324,39 @@ class AddRecord extends Component {
     return null;
   }
 
+  renderButtons() {
+    const buttons = catsByLength[this.props.categories.length];
+    return this.props.categories.map(({
+      id: catId,
+      icon,
+      type,
+    }, index) => {
+      const [id, Button] = buttons[index];
+
+      return (
+        <Button
+          ref={this.getRef(id)}
+          id={catId}
+          type={type}
+        >
+          <Icon name={icon} size={25} color="#395b8a" />
+        </Button>
+      );
+    });
+  }
+
   render() {
     return (
       <View ref={this.getWrapperRef}>
         <Wrapper>
-          <Button1 ref={this.getRef(1)}>
-            <Icon name="star-o" size={25} color="#09203F" />
-          </Button1>
-          <Button2 ref={this.getRef(2)} />
-          <Button3 ref={this.getRef(3)} />
-          <Button4 ref={this.getRef(4)} />
-          <Button5 ref={this.getRef(5)} />
-          <Button6 ref={this.getRef(6)} />
-          <Button7 ref={this.getRef(7)} />
+          {this.renderButtons()}
           <MainButton ref={this.getRef('main')}>
             <Icon
               name="ellipsis-h"
               size={35}
-              color="#09203F"
+              color="#395b8a"
               style={{ paddingTop: 5 }}
-              />
+            />
           </MainButton>
         </Wrapper>
       </View>
@@ -335,49 +364,59 @@ class AddRecord extends Component {
   }
 }
 
+const createPanResponder = (key, ctx) => PanResponder.create({
+  onStartShouldSetPanResponder: (evt, gestureState) => true,
+  onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+  onMoveShouldSetPanResponder: (evt, gestureState) => true,
+  onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+  onPanResponderGrant: (evt, gestureState) => {
+    ctx[key].open();
+  },
+  onPanResponderRelease: (evt, gestureState) => {
+    ctx[key].close();
+    if (ctx.activeId != null) {
+      ctx[key].unhighlight(ctx.activeId);
+      ctx.activeId = null;
+    }
+  },
+  onPanResponderMove: (evt) => {
+    const { pageX, pageY } = evt.nativeEvent;
+    const id = ctx[key].compareCoords(pageX, pageY);
+    if (id == null) {
+      if (ctx.activeId != null) {
+        ctx[key].unhighlight(ctx.activeId);
+        ctx.activeId = null;
+      }
+      return;
+    }
+    if (ctx.activeId == null) {
+      ctx[key].highlight(id);
+      ctx.activeId = id;
+    }
+  }
+});
+
 export default class ButtonsWrapper extends Component {
   constructor() {
     super();
 
-    this.records = null;
+    this.income = null;
+    this.cost = null;
 
     this.activeId = null;
-    this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onPanResponderGrant: (evt, gestureState) => {
-        this.records.open();
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-        this.records.close();
-        if (this.activeId != null) {
-          this.records.unhighlight(this.activeId);
-          this.activeId = null;
-        }
-      },
-      onPanResponderMove: (evt) => {
-        const { pageX, pageY } = evt.nativeEvent;
-        const id = this.records.compareCoords(pageX, pageY);
-        if (id == null) {
-          if (this.activeId != null) {
-            this.records.unhighlight(this.activeId);
-            this.activeId = null;
-          }
-          return;
-        }
-        if (this.activeId == null) {
-          this.records.highlight(id);
-          this.activeId = id;
-        }
-      }
-    });
+    this.incomePanResponder = createPanResponder('income', this);
+    this.costPanResponder = createPanResponder('cost', this);
   }
 
-  getRecordsRef = ref => {
+  getIncomeRecordsRef = ref => {
     if (ref != null) {
-      this.records = ref;
+      this.income = ref;
+    }
+  }
+
+  getCostRecordsRef = ref => {
+    if (ref != null) {
+      this.cost = ref;
     }
   }
 
@@ -386,7 +425,7 @@ export default class ButtonsWrapper extends Component {
       <ButtonsOutter>
         <Buttons>
           <View
-            {...this.panResponder.panHandlers}
+            {...this.incomePanResponder.panHandlers}
             hitSlop={{
               top: 20,
               left: 10,
@@ -397,7 +436,7 @@ export default class ButtonsWrapper extends Component {
             <Plus size={45} width={8} />
           </View>
           <View
-            {...this.panResponder.panHandlers}
+            {...this.costPanResponder.panHandlers}
             hitSlop={{
               top: 40,
               left: 10,
@@ -408,7 +447,27 @@ export default class ButtonsWrapper extends Component {
             <Minus size={45} width={8} />
           </View>
         </Buttons>
-        <AddRecord ref={this.getRecordsRef} />
+        <AddRecord
+          ref={this.getIncomeRecordsRef}
+          categories={[
+            { id: 10, icon: 'star-o', type: 'cost' },
+            { id: 11, icon: 'adjust', type: 'cost' },
+            { id: 12, icon: 'bell-o', type: 'cost' },
+            { id: 13, icon: 'building-o', type: 'cost' },
+            { id: 14, icon: 'bullseye', type: 'cost' },
+            { id: 15, icon: 'futbol-o', type: 'cost' },
+            { id: 16, icon: 'moon-o', type: 'cost' },
+          ]}
+        />
+        <AddRecord
+          ref={this.getCostRecordsRef}
+          categories={[
+            { id: 10, icon: 'star-o', type: 'cost' },
+            { id: 11, icon: 'adjust', type: 'cost' },
+            { id: 12, icon: 'bell-o', type: 'cost' },
+            { id: 13, icon: 'building-o', type: 'cost' },
+          ]}
+        />
       </ButtonsOutter>
     );
   }
