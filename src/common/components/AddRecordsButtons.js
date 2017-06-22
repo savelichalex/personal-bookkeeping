@@ -195,13 +195,13 @@ const MainButton = createButtonAnimated(
 
 const REGULAR_HIT_SLOP = 30;
 const coords = [
-  [1, -25 + REGULAR_HIT_SLOP, -200 + REGULAR_HIT_SLOP, Math.pow(15, 2)],
-  [2, -178 + REGULAR_HIT_SLOP, -43 + REGULAR_HIT_SLOP, Math.pow(15, 2)],
-  [3, 138 + REGULAR_HIT_SLOP, -43 + REGULAR_HIT_SLOP, Math.pow(15, 2)],
-  [4, -138 + REGULAR_HIT_SLOP, -156 + REGULAR_HIT_SLOP, Math.pow(15, 2)],
-  [5, 98 + REGULAR_HIT_SLOP, -156 + REGULAR_HIT_SLOP, Math.pow(15, 2)],
-  [6, -138 + REGULAR_HIT_SLOP, 80 + REGULAR_HIT_SLOP, Math.pow(15, 2)],
-  [7, 98 + REGULAR_HIT_SLOP, 80 + REGULAR_HIT_SLOP, Math.pow(15, 2)],
+  [1, -25 + REGULAR_HIT_SLOP, -200 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [2, -178 + REGULAR_HIT_SLOP, -43 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [3, 138 + REGULAR_HIT_SLOP, -43 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [4, -138 + REGULAR_HIT_SLOP, -156 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [5, 98 + REGULAR_HIT_SLOP, -156 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [6, -138 + REGULAR_HIT_SLOP, 80 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [7, 98 + REGULAR_HIT_SLOP, 80 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
   ['main', -30 + 30, 105 + 30, Math.pow(30, 2)],
 ];
 
@@ -329,7 +329,6 @@ class AddRecord extends Component {
     return this.props.categories.map(({
       id: catId,
       icon,
-      type,
     }, index) => {
       const [id, Button] = buttons[index];
 
@@ -337,7 +336,6 @@ class AddRecord extends Component {
         <Button
           ref={this.getRef(id)}
           id={catId}
-          type={type}
         >
           <Icon name={icon} size={25} color="#395b8a" />
         </Button>
@@ -449,24 +447,11 @@ export default class ButtonsWrapper extends Component {
         </Buttons>
         <AddRecord
           ref={this.getIncomeRecordsRef}
-          categories={[
-            { id: 10, icon: 'star-o', type: 'cost' },
-            { id: 11, icon: 'adjust', type: 'cost' },
-            { id: 12, icon: 'bell-o', type: 'cost' },
-            { id: 13, icon: 'building-o', type: 'cost' },
-            { id: 14, icon: 'bullseye', type: 'cost' },
-            { id: 15, icon: 'futbol-o', type: 'cost' },
-            { id: 16, icon: 'moon-o', type: 'cost' },
-          ]}
+          categories={this.props.incomesCategories}
         />
         <AddRecord
           ref={this.getCostRecordsRef}
-          categories={[
-            { id: 10, icon: 'star-o', type: 'cost' },
-            { id: 11, icon: 'adjust', type: 'cost' },
-            { id: 12, icon: 'bell-o', type: 'cost' },
-            { id: 13, icon: 'building-o', type: 'cost' },
-          ]}
+          categories={this.props.costsCategories}
         />
       </ButtonsOutter>
     );
