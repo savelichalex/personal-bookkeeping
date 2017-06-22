@@ -194,7 +194,7 @@ const MainScreen = ({
                 onOpenRecordWithCategory={
                   (id, isCost) => Navigator.present(
                     'AddRecordWithCategory',
-                    { isCost },
+                    { isCost, category: id },
                   )
                 }
                 onOpenRecordWithoutCategory={

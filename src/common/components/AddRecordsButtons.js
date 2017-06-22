@@ -279,7 +279,7 @@ class AddRecord extends Component {
 
     if (button != null) {
       button.unhighlight();
-      return id;
+      return button.props.id;
     }
 
     return null;
@@ -385,13 +385,14 @@ const createPanResponder = (key, ctx, isCost) => PanResponder.create({
     ctx[key].close();
     if (ctx.activeId != null) {
       const id = ctx[key].unhighlight(ctx.activeId);
+      const activeId = ctx.activeId;
       ctx.activeId = null;
 
+      if (activeId === 'main') {
+        return ctx.props.onOpenRecordWithoutCategory(isCost);
+      }
       if (id == null) {
         return;
-      }
-      if (id == 'main') {
-        return ctx.props.onOpenRecordWithoutCategory(isCost);
       }
       return ctx.props.onOpenRecordWithCategory(id, isCost);
     }
