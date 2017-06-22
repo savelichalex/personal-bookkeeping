@@ -150,7 +150,7 @@ const AddRecordWithCategoryScreen = ({
   closeScreen,
 }) => (
   <Navigator.Config
-    title={`${isEdit ? 'Редактировать' : 'Добавить'} ${isCost ? 'доход' : 'расход'}`}
+    title={`${isEdit ? 'Редактировать' : 'Добавить'} ${isCost ? 'расход' : 'доход'}`}
     titleColor="#fff"
     translucent
     leftImage={require('../../../images/nav-back-icon.png')}
@@ -233,7 +233,7 @@ class AddRecordWithCategoryScreenWrap extends Component {
     } = this.state;
 
     createNewRecord(
-      this.props.isCost ? 'income' : 'cost',
+      this.props.isCost ? 'cost' : 'income',
       sum,
       note,
       categoryId,

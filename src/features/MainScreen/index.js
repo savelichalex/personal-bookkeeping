@@ -191,6 +191,18 @@ const MainScreen = ({
               <Buttons
                 incomesCategories={incomesCategories}
                 costsCategories={costsCategories}
+                onOpenRecordWithCategory={
+                  (id, isCost) => Navigator.present(
+                    'AddRecordWithCategory',
+                    { isCost },
+                  )
+                }
+                onOpenRecordWithoutCategory={
+                  isCost => Navigator.present(
+                    'AddRecordWithCategory',
+                    { isCost },
+                  )
+                }
               />
             </Balance.CircleInnerBorder>
           </Balance.CircleOutterBorder>

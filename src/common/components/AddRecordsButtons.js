@@ -88,7 +88,7 @@ const createButtonAnimated = (Comp, size, defaultX, defaultY, toX, toY) => (
 
     highlight() {
       Animated.spring(this.scale, {
-        toValue: 1.5,
+        toValue: this.props.scale || 1.5,
         useNativeDriver: true,
       }).start();
     }
@@ -193,16 +193,24 @@ const MainButton = createButtonAnimated(
   105,
 );
 
-const REGULAR_HIT_SLOP = 30;
+const REGULAR_HIT_SLOP = 40;
 const coords = [
-  [1, -25 + REGULAR_HIT_SLOP, -200 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
-  [2, -178 + REGULAR_HIT_SLOP, -43 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
-  [3, 138 + REGULAR_HIT_SLOP, -43 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
-  [4, -138 + REGULAR_HIT_SLOP, -156 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
-  [5, 98 + REGULAR_HIT_SLOP, -156 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
-  [6, -138 + REGULAR_HIT_SLOP, 80 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
-  [7, 98 + REGULAR_HIT_SLOP, 80 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
-  ['main', -30 + 30, 105 + 30, Math.pow(30, 2)],
+  [1, -25 + REGULAR_HIT_SLOP,
+   -200 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [2, -178 + REGULAR_HIT_SLOP,
+   -43 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [3, 138 + REGULAR_HIT_SLOP,
+   -43 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [4, -138 + REGULAR_HIT_SLOP,
+   -156 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [5, 98 + REGULAR_HIT_SLOP,
+   -156 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [6, -138 + REGULAR_HIT_SLOP,
+   80 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  [7, 98 + REGULAR_HIT_SLOP,
+   80 + REGULAR_HIT_SLOP, Math.pow(REGULAR_HIT_SLOP, 2)],
+  ['main', -30 + REGULAR_HIT_SLOP + 10,
+   105 + REGULAR_HIT_SLOP + 10, Math.pow(REGULAR_HIT_SLOP + 10, 2)],
 ];
 
 const catsByLength = {
@@ -271,7 +279,10 @@ class AddRecord extends Component {
 
     if (button != null) {
       button.unhighlight();
+      return id;
     }
+
+    return null;
   }
 
   getRef = num => ref => {
@@ -348,7 +359,7 @@ class AddRecord extends Component {
       <View ref={this.getWrapperRef}>
         <Wrapper>
           {this.renderButtons()}
-          <MainButton ref={this.getRef('main')}>
+          <MainButton ref={this.getRef('main')} scale={1.3}>
             <Icon
               name="ellipsis-h"
               size={35}
@@ -362,7 +373,7 @@ class AddRecord extends Component {
   }
 }
 
-const createPanResponder = (key, ctx) => PanResponder.create({
+const createPanResponder = (key, ctx, isCost) => PanResponder.create({
   onStartShouldSetPanResponder: (evt, gestureState) => true,
   onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
   onMoveShouldSetPanResponder: (evt, gestureState) => true,
@@ -373,8 +384,16 @@ const createPanResponder = (key, ctx) => PanResponder.create({
   onPanResponderRelease: (evt, gestureState) => {
     ctx[key].close();
     if (ctx.activeId != null) {
-      ctx[key].unhighlight(ctx.activeId);
+      const id = ctx[key].unhighlight(ctx.activeId);
       ctx.activeId = null;
+
+      if (id == null) {
+        return;
+      }
+      if (id == 'main') {
+        return ctx.props.onOpenRecordWithoutCategory(isCost);
+      }
+      return ctx.props.onOpenRecordWithCategory(id, isCost);
     }
   },
   onPanResponderMove: (evt) => {
@@ -402,8 +421,8 @@ export default class ButtonsWrapper extends Component {
     this.cost = null;
 
     this.activeId = null;
-    this.incomePanResponder = createPanResponder('income', this);
-    this.costPanResponder = createPanResponder('cost', this);
+    this.incomePanResponder = createPanResponder('income', this, false);
+    this.costPanResponder = createPanResponder('cost', this, true);
   }
 
   getIncomeRecordsRef = ref => {
