@@ -385,10 +385,26 @@ export default class ButtonsWrapper extends Component {
     return (
       <ButtonsOutter>
         <Buttons>
-          <View {...this.panResponder.panHandlers}>
+          <View
+            {...this.panResponder.panHandlers}
+            hitSlop={{
+              top: 20,
+              left: 10,
+              right: 10,
+              bottom: 20,
+            }}
+          >
             <Plus size={45} width={8} />
           </View>
-          <View>
+          <View
+            {...this.panResponder.panHandlers}
+            hitSlop={{
+              top: 40,
+              left: 10,
+              right: 10,
+              bottom: 40,
+            }}
+          >
             <Minus size={45} width={8} />
           </View>
         </Buttons>
