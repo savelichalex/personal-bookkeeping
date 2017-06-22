@@ -10,6 +10,9 @@ import styled from 'styled-components/native';
 import Navigator from 'native-navigation';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from '../../db';
+import { mapDbRows } from '../../common/utils';
+
+import Buttons from '../../common/components/AddRecordsButtons';
 
 const {
   Surface,
@@ -148,56 +151,29 @@ const Circle = ({ size, width, minusPer }) => {
           stroke="#A4EEAA"
           strokeWidth={width}
         />
-        <Shape
-          d={minusPath}
-          stroke="#FF9D9D"
-          strokeWidth={width}
-          strokeCap={'square'}
-        />
+        {minusPer > 0 && (
+          <Shape
+            d={minusPath}
+            stroke="#FF9D9D"
+            strokeWidth={width}
+            strokeCap={'square'}
+          />
+        )}
       </Group>
     </Surface>
   );
 };
 
-const Plus = ({ size, width }) => (
-  <Surface
-    width={size}
-    height={size}
-  >
-    <Group>
-      <Shape
-        d={`M 0 ${size /  2} L ${size} ${size / 2}`}
-        stroke="#fff"
-        strokeWidth={width}
-        strokeCap={'square'}
-      />
-      <Shape
-        d={`M ${size /  2} 0 L ${size / 2} ${size}`}
-        stroke="#fff"
-        strokeWidth={width}
-        strokeCap={'square'}
-      />
-    </Group>
-  </Surface>
-);
-
-const Minus = ({ size, width }) => (
-  <Surface
-    width={size}
-    height={width}
-    >
-    <Shape
-      d={`M 0 ${width /  2} L ${size} ${width / 2}`}
-      stroke="#fff"
-      strokeWidth={width}
-      strokeCap={'square'}
-    />
-  </Surface>
-);
-
-const MainScreen = ({ income, cost, balance, costPer, }) => (
+const MainScreen = ({
+  income,
+  cost,
+  balance,
+  costPer,
+  incomesCategories,
+  costsCategories,
+}) => (
   <Navigator.Config
-    hidden={true}
+    hidden
   >
     <WrapperView>
       <StartedWrapper
@@ -212,18 +188,22 @@ const MainScreen = ({ income, cost, balance, costPer, }) => (
           <Balance.CircleOutterBorder>
             <Circle size={213} width={14} minusPer={costPer} />
             <Balance.CircleInnerBorder>
-              <Balance.CircleButtons>
-                <TouchableOpacity
-                  onPress={() => Navigator.present('AddRecordWithCategory', { isCost: true })}
-                >
-                  <Plus size={45} width={8} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => Navigator.present('AddRecordWithCategory', { isCost: false })}
-                >
-                  <Minus size={45} width={8} />
-                </TouchableOpacity>
-              </Balance.CircleButtons>
+              <Buttons
+                incomesCategories={incomesCategories}
+                costsCategories={costsCategories}
+                onOpenRecordWithCategory={
+                  (id, isCost) => Navigator.present(
+                    'AddRecordWithCategory',
+                    { isCost, category: id },
+                  )
+                }
+                onOpenRecordWithoutCategory={
+                  isCost => Navigator.present(
+                    'AddRecordWithCategory',
+                    { isCost },
+                  )
+                }
+              />
             </Balance.CircleInnerBorder>
           </Balance.CircleOutterBorder>
         </Balance.CircleOutter>
@@ -264,14 +244,34 @@ export default connect(
       SELECT sum(amount)
       FROM Records
       WHERE type = 'cost' AND created >= ${periodStart}`,
+    () => `
+      SELECT c.id, c.icon
+      FROM Categories c
+        LEFT JOIN Records r ON r.category = c.id
+      WHERE type='income'
+      GROUP BY c.id
+      ORDER BY COUNT(r.category) DESC
+      LIMIT 7
+    `,
+    () => `
+      SELECT c.id, c.icon
+      FROM Categories c
+        LEFT JOIN Records r ON r.category = c.id
+      WHERE type='cost'
+      GROUP BY c.id
+      ORDER BY COUNT(r.category) DESC
+      LIMIT 7
+    `,
   ],
-  (incomeSet, costSet) => {
+  (incomeSet, costSet, incomesCategoriesSet, costsCategoriesSet) => {
     if (incomeSet == null || costSet == null) {
       return ({
         income: 0,
         cost: 0,
         balance: 0,
         costPer: 50,
+        incomesCategories: [],
+        costsCategories: [],
       });
     }
 
@@ -282,11 +282,16 @@ export default connect(
           ? Math.floor(cost / income * 100)
           : 100;
 
+    const incomesCategories = mapDbRows(incomesCategoriesSet.rows);
+    const costsCategories = mapDbRows(costsCategoriesSet.rows);
+
     return ({
       income,
-      cost,
-      balance,
-      costPer,
+      cost: cost || 0,
+      balance: balance || 0,
+      costPer: costPer || 0,
+      incomesCategories,
+      costsCategories,
     });
   },
 )(MainScreen);

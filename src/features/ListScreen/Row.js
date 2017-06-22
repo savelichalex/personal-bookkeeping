@@ -71,6 +71,13 @@ class Row extends Component {
     }
   }
 
+  onClose = () => {
+    Animated.timing(
+      this.deltaX,
+      { toValue: -1 * Screen.width }
+    ).start();
+  }
+
   render() {
     return (
       <View>
@@ -92,7 +99,7 @@ class Row extends Component {
             }}
           >
             <Button.Inner
-              onPress={this.close}
+              onPress={this.onClose}
             >
               <Button.Icon source={require('../../../images/delete-icon.png')} />
             </Button.Inner>
